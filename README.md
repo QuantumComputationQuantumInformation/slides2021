@@ -6,7 +6,10 @@ https://join.slack.com/t/qcqi2021/shared_invite/zt-wkvdsp50-bQUcI1hy2fc9jYIxkItD
 
 Youtube playlist of the lecture videos.
 
+https://www.youtube.com/playlist?list=PLmCVdZFx-DufV_nsl_UnaRaznW6DHE_Aq
+
 Lector videos for last year (in Japanese)
+
 https://www.youtube.com/playlist?list=PLmCVdZFx-DuebJ2Up_0tW5cAgJmsjECcY
 
 * 10/1 Introduction to quantum theory: Quantum states and quantum measurements [slide](/tex/01_states_measurements.pdf)
