@@ -217,14 +217,14 @@ A useful formula.
 \left(\ket{\psi}\bra{\psi}\ket{v}\right)\otimes
 \left(\ket{\phi}\bra{\phi}\ket{w}\right)\\
 &=\braket{\psi|v}\braket{\phi|w}
-\ket{v}\otimes \ket{w}
+\ket{\psi}\otimes \ket{\phi}
 \end{align*}
 On the other hand,
 \begin{align*}
 &\left(\ket{\psi}\otimes\ket{\phi}\right)
 \left(\bra{\psi}\otimes\bra{\phi}\right) \left(\ket{v}\otimes \ket{w}\right)\\
 &=\braket{\psi|v}\braket{\phi|w}
-\ket{v}\otimes \ket{w}
+\ket{\psi}\otimes \ket{\phi}
 \end{align*}
 Hence,
 \begin{align*}
@@ -244,7 +244,7 @@ For quantum states $\rho$ and $\sigma$
 &=
 \left(\sum_j \mu_j \ket{\psi_j}\bra{\psi_j}\right)\otimes
 \left(\sum_k \nu_k \ket{\phi_k}\bra{\phi_k}\right)\\
-&=\sum_{j,k}\mu_j\nu_k\ket{\psi_k\phi_k}\bra{\psi_k\phi_k}
+&=\sum_{j,k}\mu_j\nu_k\ket{\psi_j\phi_k}\bra{\psi_j\phi_k}
 \succeq0
 \end{align*}
 \end{frame}
@@ -525,7 +525,7 @@ These are \emm{orthogonal}.
 \item $\frac12(\ket{00}+i\ket{01}+i\ket{10}+\ket{11})$
 \item $\frac12(\ket{00}+i\ket{01}+i\ket{10}-\ket{11})$
 \end{enumerate}
-\item Show the reduced density matrices of the above pure states.
+\item Show the reduced density matrices for each qubit of the above pure states.
 \end{enumerate}
 \end{frame}
 
