@@ -1,0 +1,653 @@
+\documentclass[10pt]{beamer}
+%\usepackage{xspace}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+%\usepackage{svg}
+%\usepackage{pgfpages}
+%\pgfpagesuselayout{4 on 1}[a4paper,border shrink=5mm,landscape]
+%\usepackage{psfrag}
+%\usepackage[usenames,dvipsnames]{xcolor}
+\usepackage{blkarray}
+\usepackage{braket}
+\usepackage{qcircuit}
+\usepackage{tikz}
+\usepackage{tikz-3dplot}
+%\usetikzlibrary{tikz-3dplot}
+\usetikzlibrary{graphs}
+\usetikzlibrary{datavisualization}
+\usetikzlibrary{datavisualization.formats.functions}
+\usepackage{pgfplotstable}
+\usepgfplotslibrary{patchplots}
+
+\setbeamercovered{transparent}
+
+\usetheme{Pittsburgh}
+%\usetheme{default}
+
+\setbeamertemplate{sidebar right}{}
+\setbeamertemplate{footline}[frame number]
+%\usefonttheme{professionalfonts}
+
+%\usepackage{sansmathaccent}
+%\usepackage{bm}
+
+%\usepackage{unicode-math}
+%%\setmainfont[SlantedFont={Latin Modern Roman Slanted},SlantedFeatures={Color=000000},
+%%  SmallCapsFont={TeX Gyre Termes},SmallCapsFeatures={Letters=SmallCaps}]{XITS}
+%\setmathfont[math-style=ISO,sans-style=upright]{XITS Math}
+%\setmathfont[range={\mathcal,\mathbfcal}]{Latin Modern Math}
+
+\usepackage{sfmath}
+
+%\mathversion{sans}
+
+\newcommand{\Tr}{\mathsf{Tr}}
+
+\definecolor{redorange}{rgb}{1.0, .25, .25}
+\definecolor{citation}{rgb}{.1, 0.8, .35}
+\newcommand\emm[1]{\textcolor{redorange}{{#1}}}
+\newcommand\numc[1]{\textcolor{citation}{{\bf #1}}}
+
+%\newcommand\bm[1]{{\mbox{\boldmath $#1$}}}
+\newcommand\bm[1]{{\mathbf{#1}}}
+%\newcommand\bm[1]{{\bf #1}}
+%\newcommand\bm[1]{\ensuremath{\boldsymbol{#1}}}
+%\newcommand\bm[1]{{\textbf{\it #1}}}
+
+\title{Quantum teleportation}
+\author{Ryuhei Mori}
+%\institute{$\vcenter{\hbox{\includegraphics[width=30pt]{ELC_logo}}}$ Postdoctoral Fellow of ELC\\ $\vcenter{\hbox{\includegraphics[width=20pt]{titech_logo}}}$ Tokyo Institute of Technology}
+\institute{Tokyo Institute of Technology}
+\date{15, Oct., 2020}
+
+
+
+\begin{document}
+\begin{frame}[plain]
+\maketitle
+\end{frame}
+
+\begin{frame}{Time evolution of a system}
+Time evolution of a system is represented by a map from a state to a state.
+
+\vspace{2em}
+\begin{equation*}
+T: \text{The set of states} \to \text{the set of states}.
+\end{equation*}
+
+\vspace{2em}
+\begin{equation*}
+p T(\rho_1) + (1-p) T(\rho_2) = T(p\rho_1 + (1-p)\rho_2)
+\end{equation*}
+for any density matrices $\rho_1,\,\rho_2$ and $p\in[0,1]$.
+
+\vspace{2em}
+\begin{center}
+$T:\mathcal{H}(V)\to\mathcal{H}(W)$ must be \emm{linear} (a proof is needed).
+\end{center}
+\end{frame}
+
+
+
+
+\begin{frame}{Schr\"odinger picture and Heisenberg picture}
+\begin{equation*}
+\emm{T^\dagger}: \text{The set of binary measurements} \to \text{the set of binary measurements}.
+\end{equation*}
+
+\vspace{.5em}
+\begin{equation*}
+\langle T(\rho), P\rangle
+=
+\langle \rho, \emm{T^\dagger}(P)\rangle
+\end{equation*}
+for any $\rho\in \mathcal{H}(V)$ and $P\in \mathcal{H}(W)$.
+$\emm{T^\dagger}$ is an \emm{adjoint} map of $T$.
+\begin{align*}
+&\langle T_3(T_2(T_1(\rho))), P\rangle
+=
+\langle T_2(T_1(\rho)), T_3^\dagger(P)\rangle\\
+=&
+\langle T_1(\rho), T_2^\dagger(T_3^\dagger(P))\rangle
+= \langle \rho, T_1^\dagger(T_2^\dagger(T_3^\dagger(P)))\rangle
+\end{align*}
+\end{frame}
+
+\begin{frame}{No-cloning theorem}
+\begin{align*}
+\ket{0}\bra{0} &\longmapsto \ket{0}\bra{0} \otimes \ket{0}\bra{0} \\
+\ket{1}\bra{1} &\longmapsto \ket{1}\bra{1} \otimes \ket{1}\bra{1}
+\end{align*}
+From the linearlity,
+\begin{align*}
+\frac12(\ket{0}\bra{0} + \ket{1}\bra{1}) &\longmapsto \frac12(\ket{0}\bra{0} \otimes \ket{0}\bra{0} + \ket{1}\bra{1} \otimes \ket{1}\bra{1}) \\
+\end{align*}
+This is not equal to
+\begin{align*}
+\frac12(\ket{0}\bra{0} + \ket{1}\bra{1})\otimes \frac12(\ket{0}\bra{0} + \ket{1}\bra{1}).
+\end{align*}
+\end{frame}
+
+\begin{frame}{Axioms for quantum channel}
+$T\colon \mathcal{H}(V) \to \mathcal{H}(W)$.
+
+\vspace{1em}
+\begin{enumerate}
+\setlength{\itemsep}{2em}
+\item Trace-preserving: $\Tr(T(\rho)) = \Tr(\rho)$.
+\onslide<1>{\item Positive : $T(\rho)\succeq 0$ for any $\rho\succeq 0$.}
+\onslide<2>{\item Completely positive: $\mathsf{id}\otimes T$ is positive.}
+\end{enumerate}
+
+%\vspace{3em}
+%In the following, we only consider $T\colon \rho \longmapsto U\rho U^\dagger$.
+\end{frame}
+
+\begin{frame}{Positive but not completely positive 1/2}
+\small
+$T\in\mathcal{L}(\mathcal{H}(\mathbb{C}^2))\colon \text{\emm{transposition}}$ according to $\{\ket{0},\ket{1}\}$.
+
+\vspace{2em}
+The transposition is obviously trace-preserving.
+
+\vspace{1em}
+The transposition is \emm{positive}.
+\begin{proof}
+For any $A\succeq 0$ and $\ket{\psi}\in\mathbb{C}^2$,
+\begin{align*}
+\bra{\psi} T(A)\ket{\psi} &=
+\bra{\psi} A^T \ket{\psi} =
+\bra{\psi} A^* \ket{\psi} =
+(\bra{\psi}^* A \ket{\psi}^*)^*\ge 0
+\qedhere
+\end{align*}
+\end{proof}
+\end{frame}
+
+\begin{frame}{Positive but not completely positive 2/2}
+\small
+But, the transposition is \emm{not} completely positive.
+\begin{proof}
+For $\ket{\Phi}:=\frac1{\sqrt{2}}(\ket{00}+\ket{11})$,
+\begin{align*}
+&(\mathsf{id}_{\mathcal{H}(\mathbb{C}^2)}\otimes T)(\ket{\Phi}\bra{\Phi})\\
+&=
+(\mathsf{id}_{\mathcal{H}(\mathbb{C}^2)}\otimes T)\Biggl(\frac12\biggl(\ket{0}\bra{0}\otimes\emm{\ket{0}\bra{0}}+\ket{0}\bra{1}\otimes\emm{\ket{0}\bra{1}}\\
+&\qquad +\ket{1}\bra{0}\otimes\emm{\ket{1}\bra{0}}+\ket{1}\bra{1}\otimes\emm{\ket{1}\bra{1}}\biggr)\Biggr)\\
+&=
+\frac12\biggl(\ket{0}\bra{0}\otimes\emm{\ket{0}\bra{0}}+\ket{0}\bra{1}\otimes\emm{\ket{1}\bra{0}}\\
+&\qquad +\ket{1}\bra{0}\otimes\emm{\ket{0}\bra{1}}+\ket{1}\bra{1}\otimes\emm{\ket{1}\bra{1}}\biggr)
+\end{align*}
+
+\vspace{-.5em}
+\begin{align*}
+\ket{00}&\mapsto\ket{00}&
+\ket{01}&\mapsto\ket{10}&
+\ket{10}&\mapsto\ket{01}&
+\ket{11}\mapsto\ket{11}
+\end{align*}
+Hence, $\ket{01}-\ket{10}\mapsto \ket{10}-\ket{01}$.
+$(\mathsf{id}_{\mathcal{H}(\mathbb{C}^2)}\otimes T)(\ket{\Phi}\bra{\Phi})$ is not positive semidefinite.
+\end{proof}
+\end{frame}
+
+\begin{frame}{Unitary operations}
+\begin{equation*}
+\rho \longmapsto U\rho U^\dagger.
+\end{equation*}
+\begin{enumerate}
+\setlength{\itemsep}{2em}
+\item Trace-preserving: $\Tr(U\rho U^\dagger) = \Tr(\rho)$.
+\item Completely positive: 
+$(\mathsf{id}\otimes T)(\rho) = (I\otimes U)\rho (I\otimes U^\dagger)$.
+%$\mathsf{id}\otimes T$ is positive.
+\end{enumerate}
+
+\vspace{2em}
+\begin{center}
+In the most of quantum computing, only \emm{pure} states and \emm{unitary} operations are used.
+\end{center}
+\end{frame}
+
+\begin{frame}{Quantum circuit}
+\[
+\Qcircuit @C=1.8em @R=1.8em @!R {
+\lstick{\ket{0}}& \qw      & \gate{H} & \qw & \gate{X} & \ctrl{2} & \gate{H} &\meter\qw\\
+\lstick{\ket{0}}& \qw      & \gate{H} & \ctrl{1} & \gate{Z} & \qw & \gate{H} &\meter\qw\\
+\lstick{\ket{0}}& \gate{X} & \gate{H} & \targ    & \qw      & \targ    & \gate{H} &\meter\qw
+}
+\]
+\end{frame}
+
+\begin{frame}{Controlled not}
+\begin{center}
+\mbox{
+\Qcircuit @C=1em @R=2.0em {
+  \lstick{\ket{x}} &  \ctrl{1} & \rstick{\ket{x}} \qw\\
+  \lstick{\ket{y}} &  \targ    & \rstick{\ket{y\oplus x}} \qw
+}
+}
+\end{center}
+\begin{align*}
+\mathsf{CNOT} \ket{x}\ket{y} \longmapsto \ket{x}\ket{y\oplus x}
+\end{align*}
+\begin{align*}
+\mathsf{CNOT}=
+\begin{bmatrix}
+1&0&0&0\\
+0&1&0&0\\
+0&0&0&1\\
+0&0&1&0
+\end{bmatrix}.
+\end{align*}
+\end{frame}
+
+\if0
+\begin{frame}{Simplification of quantum circuit 1/5}
+\[
+\Qcircuit @C=1.8em @R=1.8em @!R {
+& \gate{X} & \gate{X} &  \qw
+}
+\quad
+=
+\quad
+\Qcircuit @C=1.8em @R=1.8em @!R {
+& \qw & \qw
+}
+\]
+\[
+\Qcircuit @C=1.8em @R=1.8em @!R {
+& \gate{Z} & \gate{Z} &  \qw
+}
+\quad
+=
+\quad
+\Qcircuit @C=1.8em @R=1.8em @!R {
+& \qw & \qw
+}
+\]
+\[
+\Qcircuit @C=1.8em @R=1.8em @!R {
+& \gate{H} & \gate{H} &  \qw
+}
+\quad
+=
+\quad
+\Qcircuit @C=1.8em @R=1.8em @!R {
+& \qw & \qw
+}
+\]
+
+
+\vspace{1em}
+\[
+\Qcircuit @C=1.8em @R=1.8em @!R {
+& \gate{H} & \gate{X} &  \gate{H}& \qw
+}
+\quad
+=
+\quad
+\Qcircuit @C=1.8em @R=1.8em @!R {
+& \gate{Z} & \qw
+}
+\]
+\[
+\Qcircuit @C=1.8em @R=1.8em @!R {
+& \gate{H} & \gate{Z} &  \gate{H}& \qw
+}
+\quad
+=
+\quad
+\Qcircuit @C=1.8em @R=1.8em @!R {
+& \gate{X} & \qw
+}
+\]
+
+\vspace{1em}
+\[
+\Qcircuit @C=1.8em @R=1.8em @!R {
+& \gate{H} & \gate{X} & \qw
+}
+\quad
+=
+\quad
+\Qcircuit @C=1.8em @R=1.8em @!R {
+& \gate{Z} & \gate{H} & \qw
+}
+\]
+\[
+\Qcircuit @C=1.8em @R=1.8em @!R {
+& \gate{H} & \gate{Z} & \qw
+}
+\quad
+=
+\quad
+\Qcircuit @C=1.8em @R=1.8em @!R {
+& \gate{X} & \gate{H} & \qw
+}
+\]
+\end{frame}
+
+\begin{frame}{Simplification of quantum circuit 2/5}
+\[
+\Qcircuit @C=1.8em @R=1.8em @!R {
+& \gate{X} & \gate{Z} & \qw
+}
+\quad
+=
+\quad
+\Qcircuit @C=1.8em @R=1.8em @!R {
+& \gate{Z} & \gate{X} & \qw
+}
+\]
+\end{frame}
+
+\begin{frame}{Simplification of quantum circuit 3/5}
+\[
+\Qcircuit @C=1.8em @R=1.8em @!R {
+& \qw & \ctrl{1} & \qw\\
+& \gate{X} & \targ & \qw
+}
+\quad
+=
+\quad
+\Qcircuit @C=1.8em @R=1.8em @!R {
+& \ctrl{1} & \qw & \qw\\
+& \targ &  \gate{X} &\qw
+}
+\]
+
+\vspace{1em}
+\[
+\Qcircuit @C=1.8em @R=1.8em @!R {
+& \gate{Z} & \ctrl{1} & \qw\\
+& \qw & \targ & \qw
+}
+\quad
+=
+\quad
+\Qcircuit @C=1.8em @R=1.8em @!R {
+& \ctrl{1} & \gate{Z} & \qw\\
+& \targ &  \qw &\qw
+}
+\]
+
+\vspace{1em}
+\[
+\Qcircuit @C=1.8em @R=1.8em @!R {
+& \gate{Z} & \ctrl{1} & \qw\\
+& \qw & \ctrl{0} & \qw
+}
+\quad
+=
+\quad
+\Qcircuit @C=1.8em @R=1.8em @!R {
+& \ctrl{1} & \gate{Z} & \qw\\
+& \ctrl{0} &  \qw &\qw
+}
+\]
+\end{frame}
+
+\begin{frame}{Simplification of quantum circuit 4/5}
+\[
+\Qcircuit @C=1.8em @R=1.8em @!R {
+& \qw & \ctrl{1} & \qw\\
+& \gate{H} & \targ & \qw
+}
+\quad
+=
+\quad
+\Qcircuit @C=1.8em @R=1.8em @!R {
+& \ctrl{1} & \qw & \qw\\
+& \ctrl{0} &  \gate{H} &\qw
+}
+\]
+
+\vspace{1em}
+\[
+\Qcircuit @C=1.8em @R=1.8em @!R {
+& \qw & \ctrl{1} & \qw\\
+& \gate{H} & \ctrl{0} & \qw
+}
+\quad
+=
+\quad
+\Qcircuit @C=1.8em @R=1.8em @!R {
+& \ctrl{1} & \qw & \qw\\
+& \targ &  \gate{H} &\qw
+}
+\]
+\end{frame}
+
+\begin{frame}{Simplification of quantum circuit 5/5}
+\[
+\Qcircuit @C=1.8em @R=1.8em @!R {
+& \qw & \ctrl{1} & \qw\\
+& \gate{Z} & \targ & \qw
+}
+\quad
+=
+\quad
+\Qcircuit @C=1.8em @R=1.8em @!R {
+& \ctrl{1} & \gate{Z} & \qw\\
+& \targ &  \gate{Z} &\qw
+}
+\]
+
+\vspace{1em}
+\[
+\Qcircuit @C=1.8em @R=1.8em @!R {
+& \gate{X} & \ctrl{1} & \qw\\
+& \qw & \targ & \qw
+}
+\quad
+=
+\quad
+\Qcircuit @C=1.8em @R=1.8em @!R {
+& \ctrl{1} & \gate{X} & \qw\\
+& \targ &  \gate{X} &\qw
+}
+\]
+
+\vspace{1em}
+\[
+\Qcircuit @C=1.8em @R=1.8em @!R {
+& \qw & \ctrl{1} & \qw\\
+& \gate{X} & \ctrl{0} & \qw
+}
+\quad
+=
+\quad
+\Qcircuit @C=1.8em @R=1.8em @!R {
+& \ctrl{1} & \gate{Z} & \qw\\
+& \ctrl{0} &  \gate{X} &\qw
+}
+\]
+
+\end{frame}
+\fi
+
+
+
+
+\begin{frame}{Bell states and quantum circuit}
+
+\vspace{1em}
+\centering
+\mbox{
+\Qcircuit @C=1em @R=.7em {
+  \lstick{\ket{0}} & \gate{H} & \ctrl{1} &  \qw & \qw \\
+  \lstick{\ket{0}} & \qw      & \targ    &  \qw & \qw 
+}
+}
+
+\vspace{2em}
+\begin{align*}
+\ket{0}\ket{0} &\longmapsto
+\frac1{\sqrt{2}}(\ket{0}+\ket{1})\ket{0}
+=
+\frac1{\sqrt{2}}(\ket{0}\ket{0}+\ket{1}\ket{0})\\
+ &\longmapsto
+\frac1{\sqrt{2}}(\ket{0}\ket{0}+\ket{1}\ket{1})
+\end{align*}
+
+\vspace{1em}
+\begin{align*}
+\ket{x}\ket{y} &\longmapsto
+\frac1{\sqrt{2}}(\ket{0}+(-1)^x\ket{1})\ket{y}
+=
+\frac1{\sqrt{2}}(\ket{0}\ket{y}+(-1)^x\ket{1}\ket{y})\\
+ &\longmapsto
+\frac1{\sqrt{2}}(\ket{0}\ket{y}+(-1)^x\ket{1}\ket{\bar{y}}).
+\end{align*}
+
+\end{frame}
+
+\begin{frame}{Conditional density operator}
+A probability of outcome of local measurement in a joint system is
+\begin{align*}
+P(a, b) = \Tr(\rho_{V\otimes W} (P_a \otimes Q_b)).
+\end{align*}
+\begin{align*}
+P(a\mid b) &= \frac1{P(b)} \Tr(\rho_{V\otimes W} (P_a \otimes Q_b))
+=  \frac1{P(b)}\Tr(\emm{\Tr_W(\rho_{V\otimes W} (I_V\otimes Q_b))} P_a).
+\end{align*}
+$\rho_{V\mid Q_b} := \emm{\frac1{P(b)} {\Tr_W(\rho_{V\otimes W} (I_V\otimes Q_b))}}$.
+
+\vspace{2em}
+For $\rho_{V\otimes W}=\ket{\varphi}_{V\otimes W}\bra{\varphi}_{V\otimes W}$ and $Q_b=\ket{\psi_b}_W\bra{\psi_b}_W$,
+\begin{equation*}
+\emm{\Tr_W(\rho_{V\otimes W} (I\otimes Q_b))}
+=
+\Tr_W(\ket{\varphi}_{V\otimes W}\bra{\varphi}_{V\otimes W} (I_V\otimes \ket{\psi_b}_W\bra{\psi_b}_W))
+\end{equation*}
+\end{frame}
+
+\begin{frame}{Conditional density operator for pure state}
+\small
+For $\rho=\ket{\varphi}_{V\otimes W}\bra{\varphi}_{V\otimes W}$ and $Q_b=\ket{\psi_b}_W\bra{\psi_b}_W$,
+\begin{equation*}
+\Tr_W(\rho_{V\otimes W} (I_V\otimes Q_b))
+=
+\Tr_W(\ket{\varphi}_{V\otimes W}\bra{\varphi}_{V\otimes W} (I\otimes \ket{\psi_b}_W\bra{\psi_b}_W))
+\end{equation*}
+From an expression $\ket{\varphi}_{V\otimes W}=\emm{\sum_{i,j}\varphi_{i,j} \ket{i}_V\ket{\psi_j}_W}$,
+\begin{align*}
+&\Tr_W(\ket{\varphi}_{V\otimes W}\bra{\varphi}_{V\otimes W} (I_V\otimes \ket{\psi_b}_W\bra{\psi_b}_W))\\
+&=
+\Tr_W\left(\sum_{i,j,k,l} \varphi_{i,j}\varphi^*_{k,l} \ket{i}_V\ket{\psi_j}_W\bra{k}_V\bra{\psi_l}_W (I_V\otimes \ket{\psi_b}_W\bra{\psi_b}_W)\right)\\
+&=\Tr_W\left(\sum_{i,j,k,l} \varphi_{i,j}\varphi^*_{k,l} \ket{i}_V\bra{k}_V\otimes \ket{\psi_j}_W\bra{\psi_l}_W (I_V\otimes \ket{\psi_b}_W\bra{\psi_b}_W)\right)\\
+&=\sum_{i,j,k,l} \varphi_{i,j}\varphi^*_{k,l} \ket{i}_V\bra{k}_V \Tr\left(\ket{\psi_j}_W\bra{\psi_l}_W \ket{\psi_b}_W\bra{\psi_b}_W\right)\\
+&=\sum_{i,k} \varphi_{i,b}\varphi^*_{k,b} \ket{i}_V\bra{k}_V
+=
+\left(\sum_{i} \varphi_{i,b}\ket{i}_V\right)\left(\sum_{k} \varphi^*_{k,b} \bra{k}_V\right)
+\end{align*}
+\begin{align*}
+\ket{\varphi}_{V\otimes W}=\sum_{i,j}\varphi_{i,j} \ket{i}_V\ket{\psi_j}_W
+\longmapsto
+\emm{\frac1{\sqrt{P(b)}}\sum_{i} \varphi_{i,b}\ket{i}_V}
+\end{align*}
+\end{frame}
+
+\begin{frame}{Examples of conditional density operator}
+For $\ket{\psi}_{V\otimes W} := \sum_{i,j=0}^1 \alpha_{i,j}\ket{i}_V\ket{j}_W$, we measure the system $W$ by $(\ket{0}\bra{0},\ket{1}\bra{1})$.
+
+\vspace{2em}
+if the outcome is 0, the state $\frac1{\sqrt{|\alpha_{0,0}|^2+|\alpha_{1,0}|^2}}\sum_{i=0}^1 \alpha_{i,0}\ket{i}_V$.
+
+\vspace{2em}
+if the outcome is 1, the state $\frac1{\sqrt{|\alpha_{0,1}|^2+|\alpha_{1,1}|^2}}\sum_{i=0}^1 \alpha_{i,1}\ket{i}_V$.
+\end{frame}
+
+
+\begin{frame}{Quantum teleportation}
+
+\[
+\Qcircuit @C=1.8em @R=0.8em @!R {
+\lstick{\ket{\psi}_{A_1}}& \qw & \qw & \ctrl{1} & \gate{H} & \meter & \cctrl{2}\\
+\lstick{\ket{0}_{A_2}} & \qw     & \targ & \targ & \qw & \meter \cwx[1] &\\
+\lstick{\ket{0}_B} & \gate{H}     & \ctrl{-1}   & \qw & \qw   & \gate{X} & \gate{Z} & \rstick{\ket{\psi}} \qw
+}
+\]
+\end{frame}
+
+\begin{frame}{Quantum teleportation}
+\small
+\begin{align*}
+\ket{\Phi}_{A_2\otimes B} &= \frac1{\sqrt{2}}\left(\ket{0}_{A_2}\ket{0}_B + \ket{1}_{A_2}\ket{1}_B\right)
+\end{align*}
+\begin{align*}
+(H_{A_1}\otimes I_{A_2}\otimes I_B)(\mathsf{CNOT}_{A_1A_2}\otimes I_B)\ket{\psi}_{A_1}\ket{\Phi}_{A_2\otimes B}
+\end{align*}
+For $\ket{\psi}_{A_1}=\alpha\ket{0}_{A_1}+\beta\ket{1}_{A_1}$
+\begin{align*}
+\ket{\psi}_{A_1}\ket{\Phi}_{A_2\otimes B} &= \left(\alpha\ket{0}_{A_1}+\beta\ket{1}_{A_1}\right)\frac1{\sqrt{2}}\left(\ket{0}_{A_2}\ket{0}_B + \ket{1}_{A_2}\ket{1}_B\right)\\
+ &\overset{\emm{\mathsf{CNOT}_{A_1A_2}}}{\longmapsto} \frac{\alpha}{\sqrt{2}}\left(\ket{0}_{A_1}\ket{0}_{A_2}\ket{0}_B + \ket{0}_{A_1}\ket{1}_{A_2}\ket{1}_B\right)\\
+ &\qquad + \frac{\beta}{\sqrt{2}}\left(\ket{1}_{A_1}\ket{1}_{A_2}\ket{0}_B + \ket{1}_{A_1}\ket{0}_{A_2}\ket{1}_B\right)\\
+ &\overset{\emm{H_{A_1}}}{\longmapsto} \frac{\alpha}{2}\left(\ket{000}_{A_1A_2B} +\ket{100}_{A_1A_2B} + \ket{011}_{A_1A_2B} + \ket{111}_{A_1A_2B}\right)\\
+ &\quad + \frac{\beta}{2}\left(\ket{010}_{A_1A_2B} -\ket{110}_{A_1A_2B} + \ket{001}_{A_1A_2B} - \ket{101}_{A_1A_2B}\right)
+\end{align*}
+\end{frame}
+
+\begin{frame}{Quantum teleportation}
+\begin{align*}
+ &\frac{\alpha}{2}\left(\ket{000}_{A_1A_2B} +\ket{100}_{A_1A_2B} + \ket{011}_{A_1A_2B} + \ket{111}_{A_1A_2B}\right)\\
+ &\quad + \frac{\beta}{2}\left(\ket{010}_{A_1A_2B} -\ket{110}_{A_1A_2B} + \ket{001}_{A_1A_2B} - \ket{101}_{A_1A_2B}\right)\\
+&=\frac12\Biggl[\emm{\ket{00}_{A_1A_2}}\left(\alpha\ket{0}_B+\beta\ket{1}_B\right) + \emm{\ket{01}_{A_1A_2}}\left(\alpha\ket{1}_B+\beta\ket{0}_B\right)\\
+&\qquad + \emm{\ket{10}_{A_1A_2}}\left(\alpha\ket{0}_B-\beta\ket{1}_B\right) + \emm{\ket{11}_{A_1A_2}}\left(\alpha\ket{1}_B-\beta\ket{0}_B\right)\Biggr]
+\end{align*}
+
+According to the measurement outcome of $A_1A_2$
+\begin{align*}
+00 &\Rightarrow I\\
+01 &\Rightarrow X\\
+10 &\Rightarrow Z\\
+11 &\Rightarrow ZX\\
+\end{align*}
+\end{frame}
+
+\if0
+\begin{frame}{Transpose trick}
+\small
+\begin{align*}
+\ket{\Phi} := \frac1{\sqrt{d}} \sum_{j=0}^{d-1} \ket{j}\ket{j}
+\end{align*}
+\begin{lemma}
+\begin{align*}
+(A\otimes I) \ket{\Phi} &= (I\otimes A^T)\ket{\Phi}
+\end{align*}
+\end{lemma}
+\begin{proof}
+\begin{align*}
+&\mathcal{M}\left((A\otimes I) \ket{\Phi}\right)
+=\mathcal{M}\left(\frac1{\sqrt{d}}\sum_{j=0}^{d-1}A\ket{j}\ket{j}\right)\\
+&=\frac1{\sqrt{d}}\sum_{j=0}^{d-1}A\ket{j}\bra{j}
+=\frac1{\sqrt{d}}A \sum_{j=0}^{d-1}\ket{j}\bra{j}
+=\frac1{\sqrt{d}}\sum_{j=0}^{d-1}\ket{j}\bra{j}A\\
+&\mathcal{M}\left((I\otimes A^T) \ket{\Phi}\right)
+=\frac1{\sqrt{d}}\sum_{j=0}^{d-1}\ket{j}(A^T\ket{j})^T\\
+\end{align*}
+\end{proof}
+\end{frame}
+
+\begin{frame}{BB84 protocol}
+\end{frame}
+\fi
+
+\begin{frame}{Assignments}
+\begin{enumerate}
+\setlength{\itemsep}{2em}
+\item Show the state vector $\ket{\psi}\in \mathbb{C}^2$ of the Bell state
+\begin{equation*}
+\frac1{\sqrt{2}}(\ket{00}+\ket{11}) \in \mathbb{C}^2\otimes \mathbb{C}^2
+\end{equation*}
+when $\ket{0}\bra{0}$ is measured at the second system.
+\item Show the state vector $\ket{\psi}\in \mathbb{C}^2$ of the Bell state
+when $\ket{+}\bra{+}$ is measured at the second system.
+\item Show the state vector $\ket{\psi}\in \mathbb{C}^2$ of the Bell state
+when $\ket{\psi}\bra{\psi}$ is measured at the second system where $\ket{\psi}:=\alpha\ket{0}+\beta\ket{1}$.
+%\item {[Advanced]} Show the reduced density matrix of system $B$ before the measurements in the quantum teleportation protocol.
+\end{enumerate}
+\end{frame}
+
+\end{document}
