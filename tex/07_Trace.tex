@@ -1,0 +1,240 @@
+\documentclass{beamer}
+%\usepackage{xspace}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+%\usepackage{svg}
+%\usepackage{pgfpages}
+%\pgfpagesuselayout{4 on 1}[a4paper,border shrink=5mm,landscape]
+%\usepackage{psfrag}
+%\usepackage[usenames,dvipsnames]{xcolor}
+\usepackage{braket}
+\usepackage{qcircuit}
+\usepackage{tikz}
+\usetikzlibrary{circuits.logic.US}
+\usetikzlibrary{graphs}
+\usetikzlibrary{datavisualization}
+\usetikzlibrary{datavisualization.formats.functions}
+\usepackage{pgfplotstable}
+\usepgfplotslibrary{patchplots}
+
+\setbeamercovered{transparent}
+
+\usetheme{Pittsburgh}
+%\usetheme{default}
+
+\setbeamertemplate{sidebar right}{}
+\setbeamertemplate{footline}[frame number]
+%\usefonttheme{professionalfonts}
+
+%\usepackage{sansmathaccent}
+%\usepackage{bm}
+
+%\usepackage{unicode-math}
+%%\setmainfont[SlantedFont={Latin Modern Roman Slanted},SlantedFeatures={Color=000000},
+%%  SmallCapsFont={TeX Gyre Termes},SmallCapsFeatures={Letters=SmallCaps}]{XITS}
+%\setmathfont[math-style=ISO,sans-style=upright]{XITS Math}
+%\setmathfont[range={\mathcal,\mathbfcal}]{Latin Modern Math}
+
+\usepackage{sfmath}
+
+%\mathversion{sans}
+
+\newcommand{\Tr}{\mathsf{Tr}}
+
+\definecolor{redorange}{rgb}{1.0, .25, .25}
+\definecolor{citation}{rgb}{.1, 0.8, .35}
+\newcommand\emm[1]{\textcolor{redorange}{{#1}}}
+\newcommand\numc[1]{\textcolor{citation}{{\bf #1}}}
+
+%\newcommand\bm[1]{{\mbox{\boldmath $#1$}}}
+\newcommand\bm[1]{{\mathbf{#1}}}
+%\newcommand\bm[1]{{\bf #1}}
+%\newcommand\bm[1]{\ensuremath{\boldsymbol{#1}}}
+%\newcommand\bm[1]{{\textbf{\it #1}}}
+
+\title{Quantum state discrimination and Holevo--Helstrom theorem}
+\author{Ryuhei Mori}
+%\institute{$\vcenter{\hbox{\includegraphics[width=30pt]{ELC_logo}}}$ Postdoctoral Fellow of ELC\\ $\vcenter{\hbox{\includegraphics[width=20pt]{titech_logo}}}$ Tokyo Institute of Technology}
+\institute{Tokyo Institute of Technology}
+\date{22, Oct., 2021}
+
+
+
+\begin{document}
+\begin{frame}[plain]
+\maketitle
+\end{frame}
+
+
+
+\begin{frame}{Discrimination of classical states}
+Discrimination of \emm{classical} states:
+
+\vspace{2em}
+\begin{itemize}
+\setlength{\itemsep}{2em}
+\item Input: A \emm{classical} state $p_0$ is given with probability $\lambda$, and $p_1$ is given with probability $1-\lambda$.
+\item Output: $i\in\{0,1\}$ that indicates the given state $p_i$.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Maximum probability of success: Discrimination of classical states}
+\small
+\begin{theorem}
+The maximum probability of success is equal to
+\begin{equation*}
+\frac{1+\emm{\|\lambda p_0 - (1-\lambda)p_1\|_1}}2
+\end{equation*}
+where
+$\|a\|_1 := \sum_{x} |a(x)|$.
+\end{theorem}
+\begin{proof}
+Let $d\colon\mathcal{X}\to\{0, 1\}$ be a discriminator.
+Assume we get 1 point if succeeds, and loose 1 point if fails.
+Then, expected point is bounded by
+\begin{align*}
+&\lambda \sum_{x\in\mathcal{X}} p_0(x) (-1)^{d(x)} +
+(1-\lambda) \sum_{x\in\mathcal{X}} p_1(x) (-1)^{d(x)+1}\\
+&=\sum_{x\in\mathcal{X}} \left(\lambda p_0(x) - (1-\lambda)p_1(x)\right) (-1)^{d(x)} \le
+\|\lambda p_0 - (1-\lambda)p_1\|_1.
+\end{align*}
+The equality is achieved by $d(x)$ that is 0 iff $\lambda p_0(x) \ge (1-\lambda)p_1(x)$.
+On the other hand, the expected point is $p_\mathsf{succ} - p_\mathsf{fail} = 2 p_\mathsf{succ} - 1$.
+\end{proof}
+\end{frame}
+
+\begin{frame}{Discrimination of quantum states}
+Discrimination of \emm{quantum} states:
+
+\vspace{2em}
+\begin{itemize}
+\setlength{\itemsep}{2em}
+\item Input: A \emm{quantum} state $\rho_0$ is given with probability $\lambda$, and $\rho_1$ is given with probability $1-\lambda$.
+\item Output: $i\in\{0,1\}$ that indicates the given state $\rho_i$.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Maximum probability of success: Discrimination of quantum states}
+\small
+\begin{theorem}[Holevo--Helstrom theorem]
+The maximum probability of success is equal to
+\begin{equation*}
+\frac{1+\emm{\|\lambda \rho_0 - (1-\lambda)\rho_1\|_1}}2
+\end{equation*}
+where
+$\|A\|_1 := \Tr(\sqrt{A^\dagger A})$, which is a sum of the singular values of $A$.
+\end{theorem}
+\begin{proof}
+Once a measurement $(P_y)_{y\in\mathcal{Y}}$ is fixed, we get a classical probability distribution $p_0(y) := \Tr(\rho_0 P_y)$ and $p_1(y) := \Tr(\rho_1 P_y)$.
+In this case, the maximum probability of success is given by
+\begin{equation*}
+\frac{1+\|\lambda p_0 - (1-\lambda)p_1\|_1}2
+\end{equation*}
+Hence, it's sufficient to show
+\begin{equation*}
+%\max_{(P_x)_{x\in\mathcal{X}}} \left\|\lambda \Tr(\rho_0 P_x) - (1-\lambda)\Tr(\rho_1 P_x)\right\|_1
+\max_{(P_y)_{y\in\mathcal{Y}}} \left\|\lambda p_0 - (1-\lambda)p_1\right\|_1
+=
+\|\lambda \rho_0 - (1-\lambda)\rho_1\|_1.
+\end{equation*}
+\end{proof}
+\end{frame}
+
+\begin{frame}{Holevo--Helstrom theorem}
+\scriptsize\vspace{-1em}
+\begin{align*}
+%\max_{(P_x)_{x\in\mathcal{X}}} \left\|\lambda \Tr(\rho_0 P_x) - (1-\lambda)\Tr(\rho_1 P_x)\right\|_1
+&\max_{(P_y)_{y\in\mathcal{Y}}} \left\|\lambda p_0 - (1-\lambda)p_1\right\|_1
+= \max_{(P_y)_{y\in\mathcal{Y}}} \sum_{y\in\mathcal{Y}}\left|\lambda p_0(y) - (1-\lambda)p_1(y)\right|\\
+&= \max_{(P_y)_{y\in\mathcal{Y}}} \sum_{y\in\mathcal{Y}}\left|\lambda \Tr(\rho_0 P_y) - (1-\lambda)\Tr(\rho_1 P_y)\right|\\
+&= \max_{(P_y)_{y\in\mathcal{Y}}} \sum_{y\in\mathcal{Y}}\left|\Tr\left((\lambda\rho_0 - (1-\lambda)\rho_1) P_y\right)\right|
+\end{align*}
+Let
+\begin{align*}
+\lambda \rho_0 - (1-\lambda)\rho_1 = \sum_{x\in\mathcal{X}} \mu_x \ket{\psi_x}\bra{\psi_x}
+\end{align*}
+be a spectral decomposition. Then,
+\begin{align*}
+&\max_{(P_y)_{y\in\mathcal{Y}}} \sum_{y\in\mathcal{Y}}\left|\Tr\left((\lambda\rho_0 - (1-\lambda)\rho_1) P_y\right)\right|
+=\max_{(P_y)_{y\in\mathcal{Y}}} \sum_{y\in\mathcal{Y}}\left|\sum_{x\in\mathcal{X}}\mu_x \bra{\psi_x} P_y\ket{\psi_x}\right|\\
+&\le\max_{(P_y)_{y\in\mathcal{Y}}} \sum_{y\in\mathcal{Y}}\sum_{x\in\mathcal{X}}|\mu_x| \bra{\psi_x} P_y\ket{\psi_x}
+=\sum_{x\in\mathcal{X}} |\mu_x|
+=
+\|\lambda \rho_0 - (1-\lambda)\rho_1\|_1.
+\end{align*}
+The maximum is achieved by $\mathcal{Y}=\mathcal{X}$ and $P_x = \ket{\psi_x}\bra{\psi_x}$,\\
+and $\mathcal{Y}=\{0,1\}$ and $P_0 = \sum_{x: \mu_x\ge 0} \ket{\psi_x}\bra{\psi_x}$, $P_1 = \sum_{x: \mu_x< 0} \ket{\psi_x}\bra{\psi_x}$.
+\end{frame}
+
+\begin{frame}{Discrimination of pure states}
+The maximum probability of success for discrimination of $\ket{\psi}\bra{\psi}$ and $\ket{\varphi}\bra{\varphi}$ is given by
+\begin{equation*}
+\bigl\|\lambda \ket{\psi}\bra{\psi} - (1-\lambda)\ket{\varphi}\bra{\varphi}\bigr\|_1
+\end{equation*}
+Let $A :=\lambda \ket{\psi}\bra{\psi} - (1-\lambda)\ket{\varphi}\bra{\varphi}$. Then, $A$ has rank at most \emm{two}.
+From
+\begin{align*}
+\Tr(A) &= \mu_0 + \mu_1 = \lambda - (1 - \lambda)\\
+\Tr(A^2) &= \mu_0^2 + \mu_1^2 = \lambda^2 + (1-\lambda)^2 - 2\lambda(1-\lambda)|\braket{\psi|\varphi}|^2,
+\end{align*}
+\begin{align*}
+2\mu_0\mu_1 &= (\mu_0 + \mu_1)^2 - (\mu_0^2 + \mu_1^2) = -2\lambda(1-\lambda)(1-|\braket{\psi|\varphi}|^2)\le 0.\\
+(\mu_0-\mu_1)^2 &= (\mu_0^2 + \mu_1^2) - 2\mu_0\mu_1 = (\lambda + (1-\lambda))^2 - 4\lambda(1-\lambda)|\braket{\psi|\varphi}|^2\\
+\|A\|_1 &= |\mu_0| + |\mu_1| = |\mu_0-\mu_1| = \emm{\sqrt{1 - 4\lambda(1-\lambda)|\braket{\psi|\varphi}|^2}}.
+\end{align*}
+\end{frame}
+
+%\begin{frame}{Distance measures for classical states to quantum states}
+%Let $\delta$ be a distance measure of classical states $p_0$ and $p_1$ that satisfies
+%\begin{itemize}
+%\item Positivity: $\delta(p_0, p_1)\ge 0$. The equality holds if and only if $p_0=p_1$.
+%\item Triangle inequality: $\delta(p_0, p_1)\le \delta(p_0, p_2)+\delta(p_2,p_1)$.
+%\end{itemize}
+%\end{frame}
+
+%\begin{frame}{Hellinger distance}
+%\begin{align*}
+%\|\lambda p_0(x) - (1-\lambda)p_1(x)\|_2
+%\end{align*}
+%\end{frame}
+
+\begin{frame}{Unitary discrimination}
+Discrimination of \emm{unitary operators}:
+
+\vspace{2em}
+\begin{itemize}
+\setlength{\itemsep}{2em}
+\item Input: A \emm{unitary operator} $U_0$ is given with probability $\lambda$, and $U_1$ is given with probability $1-\lambda$ as an oracle $\mathcal{O}$ that can be used once.
+\item Output: $i\in\{0,1\}$ that indicates the given unitary $U_i$.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Unitary discrimination}
+If algorithm call the oracle $\mathcal{O}$ on a state $\ket{\psi}$, we get either of $U_0\ket{\psi}$ or $U_1\ket{\psi}$.
+
+Then, the maximum probability of success is given by
+\begin{align*}
+&\max_{\ket{\psi}}\|\lambda U_0\ket{\psi}\bra{\psi} U_0^\dagger - (1-\lambda) U_1\ket{\psi}\bra{\psi}U_1^\dagger\|_1\\
+&=
+\max_{\ket{\psi}}\sqrt{1-4\lambda(1-\lambda)|\bra{\psi}U_0^\dagger U_1\ket{\psi}|^2}
+\end{align*}
+For $V:=U_0^\dagger U_1$, let $V = \sum_x \mu_x \ket{\varphi_x}\bra{\varphi_x}$ be a spectral decomposition. Note that $|\mu_x|=1$ for all x.
+Let $\ket{\psi} = \sum_x \alpha_x \ket{\varphi_x}$.
+
+Then, $\bra{\psi}U_0^\dagger U_1\ket{\psi}= \sum_x |\alpha_x|^2 \mu_x$, which is a convex combination of $(\mu_x)_x$.
+Let $\emm{\theta_{\mathsf{cover}}}$ be the smallest angle that covers all eigenvalues $(\mu_x)_x$.
+Then, $\min_{\ket{\psi}} \bra{\psi}U_0^\dagger U_1\ket{\psi}= \cos(\frac{\emm{\theta_\mathsf{cover}}}2)$ if $\theta_\mathsf{cover}\le \pi$, and 0 otherwise.
+
+\end{frame}
+
+\begin{frame}{Assignment}
+\begin{enumerate}
+\setlength{\itemsep}{2em}
+\item Show the maximum probability of success for discriminating $\ket{0}$ and $\ket{+}$ given with the uniform probability.
+\item Show a binary optimal measurement for the discrimination of $\ket{0}$ and $\ket{+}$ given with the uniform probability.
+\item Show the maximum probability of success for discriminating $I$ and $R_Z(\theta)$ given with the uniform probability.
+Show the input state $\ket{\psi}$ for the oracle as well.
+\end{enumerate}
+\end{frame}
+
+\end{document}
