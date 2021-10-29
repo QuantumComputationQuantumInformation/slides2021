@@ -20,3 +20,4 @@ https://www.youtube.com/playlist?list=PLmCVdZFx-DuebJ2Up_0tW5cAgJmsjECcY
 * 10/19 Nonlocality and Tsirelson's bound [slide](/tex/06_nonlocality.pdf)
 * 10/22 Quantum state discrimination and Holevo--Helstrom theorem [slide](/tex/07_Trace.pdf)
 * 10/26 Quantum circuit [slide](/tex/08_Deutsch.pdf)
+* 11/2 Universality of quantum circuit [slide](/tex/09_Universality.pdf)
