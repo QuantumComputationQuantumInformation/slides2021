@@ -164,21 +164,20 @@ satisfying $\|U-\widetilde{U}\|<\emm{\epsilon}$.
 \begin{frame}{Two-level unitary matrix}
 \begin{equation*}
 \begin{bmatrix}
-1&0&0&0&0&0&0&0&0\\
-0&1&0&0&0&0&0&0&0\\
-0&0&\emm{u_{1,1}}&0&0&0&0&\emm{u_{1,2}}&0\\
-0&0&0&1&0&0&0&0&0\\
-0&0&0&0&1&0&0&0&0\\
-0&0&0&0&0&1&0&0&0\\
-0&0&0&0&0&0&1&0&0\\
-0&0&\emm{u_{2,1}}&0&0&0&0&\emm{u_{2,2}}&0\\
-0&0&0&0&0&0&0&0&1\\
+1&0&0&0&0&0&0&0\\
+0&1&0&0&0&0&0&0\\
+0&0&\emm{u_{1,1}}&0&0&0&0&\emm{u_{1,2}}\\
+0&0&0&1&0&0&0&0\\
+0&0&0&0&1&0&0&0\\
+0&0&0&0&0&1&0&0\\
+0&0&0&0&0&0&1&0\\
+0&0&\emm{u_{2,1}}&0&0&0&0&\emm{u_{2,2}}
 \end{bmatrix}
 \end{equation*}
 There exist $x\ne y\in\{0,1\}^n$ such that
 \begin{align*}
-\ket{x} &\longmapsto u_{1,1} \ket{x} + u_{1,2}\ket{y}\\
-\ket{y} &\longmapsto u_{2,1} \ket{x} + u_{2,2}\ket{y}
+\ket{x} &\longmapsto u_{1,1} \ket{x} + u_{2,1}\ket{y}\\
+\ket{y} &\longmapsto u_{1,2} \ket{x} + u_{2,2}\ket{y}
 \end{align*}
 and for any $z\in\{0,1\}^n\setminus\{x,y\}$, $\ket{z}\longmapsto\ket{z}$.
 \end{frame}
