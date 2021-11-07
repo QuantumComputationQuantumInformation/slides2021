@@ -1,0 +1,382 @@
+\documentclass{beamer}
+%\usepackage{xspace}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+%\usepackage{svg}
+%\usepackage{pgfpages}
+%\pgfpagesuselayout{4 on 1}[a4paper,border shrink=5mm,landscape]
+%\usepackage{psfrag}
+%\usepackage[usenames,dvipsnames]{xcolor}
+\usepackage{braket}
+\usepackage{qcircuit}
+%\usepackage{algorithmicx}
+\usepackage{algpseudocode}
+\usepackage{tikz}
+\usepackage{tikz-3dplot}
+\usetikzlibrary{circuits.logic.US}
+\usetikzlibrary{graphs}
+\usetikzlibrary{datavisualization}
+\usetikzlibrary{datavisualization.formats.functions}
+\usepackage{pgfplotstable}
+\usepgfplotslibrary{patchplots}
+
+\setbeamercovered{transparent}
+
+\usetheme{Pittsburgh}
+%\usetheme{default}
+
+\setbeamertemplate{sidebar right}{}
+\setbeamertemplate{footline}[frame number]
+%\usefonttheme{professionalfonts}
+
+%\usepackage{sansmathaccent}
+%\usepackage{bm}
+
+%\usepackage{unicode-math}
+%%\setmainfont[SlantedFont={Latin Modern Roman Slanted},SlantedFeatures={Color=000000},
+%%  SmallCapsFont={TeX Gyre Termes},SmallCapsFeatures={Letters=SmallCaps}]{XITS}
+%\setmathfont[math-style=ISO,sans-style=upright]{XITS Math}
+%\setmathfont[range={\mathcal,\mathbfcal}]{Latin Modern Math}
+
+\usepackage{sfmath}
+
+%\mathversion{sans}
+
+\newcommand{\Tr}{\mathsf{Tr}}
+
+\definecolor{redorange}{rgb}{1.0, .25, .25}
+\definecolor{citation}{rgb}{.1, 0.8, .35}
+\newcommand\emm[1]{\textcolor{redorange}{{#1}}}
+\newcommand\numc[1]{\textcolor{citation}{{\bf #1}}}
+
+%\newcommand\bm[1]{{\mbox{\boldmath $#1$}}}
+\newcommand\bm[1]{{\mathbf{#1}}}
+%\newcommand\bm[1]{{\bf #1}}
+%\newcommand\bm[1]{\ensuremath{\boldsymbol{#1}}}
+%\newcommand\bm[1]{{\textbf{\it #1}}}
+
+\title{Shor's algorithm}
+\author{Ryuhei Mori}
+%\institute{$\vcenter{\hbox{\includegraphics[width=30pt]{ELC_logo}}}$ Postdoctoral Fellow of ELC\\ $\vcenter{\hbox{\includegraphics[width=20pt]{titech_logo}}}$ Tokyo Institute of Technology}
+\institute{Tokyo Institute of Technology}
+\date{17, Nov., 2020}
+
+
+
+\begin{document}
+\begin{frame}[plain]
+\maketitle
+\end{frame}
+
+
+\begin{frame}{Integer factoring and primality test}
+\begin{itemize}
+\setlength{\itemsep}{2em}
+\item \textsc{PrimalityTest}:\\
+Input: $N\in\mathbb{N}$\\
+Output: YES if $N$ is a prime number, NO if $N$ is a composite number.
+\item \textsc{IntegerFactoring}:\\
+Input: $N\in\mathbb{N}$\\
+Output: $a\in\mathbb{N}$ satisfying $a\ne 1, N$ and $a$ divides $N$.
+\end{itemize}
+
+\vspace{1em}
+\begin{center}
+\centering
+Does there exist an algorithm with time complexity $O((\log N)^c)$ ?
+\end{center}
+
+\vspace{1em}
+It is known that $\textsc{PrimalityTest}\in\mathsf{P}$ {\scriptsize [Agrawal, Kayal, Saxena, 2004]}.
+
+It is \emm{believed} that $\textsc{IntegerFactoring}\notin\mathsf{BPP}$.
+
+It is known that $\textsc{IntegerFactoring}\in\emm{\mathsf{BQP}}$. { [Shor 1994]}
+\end{frame}
+
+\begin{frame}{Nontrivial square root of $1$}
+\begin{equation*}
+x^2 = 1 \mod N
+\end{equation*}
+\begin{align*}
+&x^2 = 1 \mod N\\
+\iff& (x-1)(x+1) = 0 \mod N
+\end{align*}
+If $N$ is a prime number, $x=\pm 1$ are only solution.
+
+\vspace{2em}
+If there exists a \emm{nontrivial square root of 1}, then $N$ must be composite number.
+
+\vspace{2em}
+If we find a \emm{nontrivial square root $x$ of 1}, we can also find a nontrivial factor of $N$ by $\mathsf{gcd}(x\pm 1, N)$.
+\end{frame}
+
+\begin{frame}{Fermat little theorem}
+\begin{theorem}[Fermat little theorem]
+If $p$ is a prime number, any integer $a$ that is not a multiple of $p$,
+\begin{equation*}
+a^{\emm{p-1}}=1\mod p.
+\end{equation*}
+\end{theorem}
+\begin{proof}
+The map
+\begin{equation*}
+x \longmapsto a x \mod p
+\end{equation*}
+is a bijection on $\{1,\dotsc,p-1\}$.
+Hence,
+\begin{align*}
+\prod_{x=1}^{p-1}x &= \prod_{x=1}^{p-1}(ax)\mod p\\
+\iff 1 &= a^{p-1}\mod p.
+\end{align*}
+\end{proof}
+\end{frame}
+
+
+\begin{frame}{Fermat test}
+\begin{algorithmic}
+\Function{Fermat}{$N$}
+\Loop{\qquad $k$ times}
+\State $a\gets \text{a random integer in } [2,N-2]$
+\If{$a^{N-1}\ne 1 \mod N$}
+\State \Return NO
+\EndIf
+\EndLoop
+\State \Return YES
+\EndFunction
+\end{algorithmic}
+
+\vspace{3em}
+Carmichel numbers ($561 = 3\cdot 11\cdot 17,\, 1105 = 5\cdot 13\cdot 17, \cdots$) passes the Fermat test for \emm{all $a$ coprime with $N$}.
+\end{frame}
+
+\begin{frame}{Finding the nontirivial square root of 1}
+We assume that $a^{N-1} = 1 \mod N$ for some integer $a\in[2,N-2]$, 
+
+\vspace{2em}
+Let $u$ and $d$ be an integer and an odd integer, respectively, satisfying $N-1=2^ud$.
+
+\vspace{2em}
+\centering
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|}
+\hline
+$a^d$ & $a^{2d}$ & $a^{2^2d}$ & $\cdots$ & $a^{2^{k-1} d}$ & $a^{2^k d}$ & $\cdots$ & $a^{2^{u-1} d}$ & $a^{2^u d}$\\
+\hline
+* & * & * & $\dotsm$ & \emm{$z\ne 1$} & $1$ & $\dotsm$ & $1$ & $1$\\
+\hline
+\end{tabular}
+
+\vspace{2em}
+$z$ is a square root of 1 modulo $N$.
+\end{frame}
+
+\begin{frame}{Miller--Rabin primality test}
+\small
+\begin{algorithmic}
+\Function{Miller--Rabin}{$N$}
+\State Let $u$ and $d$ be an integer and an odd integer, respectively, satisfying $N=2^ud+1$
+\Loop\qquad $k$ times
+\State $a\gets \text{a random integer in } [2,N-2]$
+\State $x\gets a^{d}\bmod N$
+\If{$x = 1$ \text{ or } $x = N-1$}
+\textbf{continue}
+\EndIf
+\Loop{\qquad $u-1$ times}
+\State $x\gets x^2\bmod N$
+\If{$x = N-1$}
+\textbf{break}
+\EndIf
+\EndLoop
+\If{$x \ne N-1$}
+\Return NO
+\EndIf
+\EndLoop
+\State \Return YES
+\EndFunction
+\end{algorithmic}
+\end{frame}
+
+\begin{frame}{Why Miller--Rabin algorithm doesn't solve \textsc{IntegerFactoring}}
+In fact, the Miller--Rabin test outputs NO with probability $1-1/4^{k}$ for composite $N$.
+
+\vspace{2em}
+The Miller--Rabin algorithm seems to find a nontrivial square root of 1, which means that we can also find a nontrivial factor of $N$, right ?
+
+\vspace{2em}
+\centering
+NO!
+
+\vspace{2em}
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+$a^d$ & $a^{2d}$ & $a^{2^2d}$ & $\dotsm$ & $a^{2^u d}$\\
+\hline
+* & * & * & $\dotsm$ & $\emm{\ne1}$\\
+\hline
+\end{tabular}
+\end{frame}
+
+\begin{frame}{Shor's algorithm}
+\begin{algorithmic}
+\Function{Shor}{$N$: An odd integer}
+\If{$N=a^b$ for some $a\ge 1$ and $b\ge 2$}
+\State \Return a
+\EndIf
+\Loop
+\State $a\gets \text{a random integer in } [2,N-2]$.
+\State $b\gets \mathsf{gcd}(a, N)$.
+\If{$b\ne 1$}
+\Return $b$
+\EndIf
+\State $r\gets \emm{\textsc{OrderFinding}(a, N)}$.
+\If{$r$ is odd}
+\textbf{continue}
+\EndIf
+\If{$a^{r/2}\ne N-1$}
+\State \Return $\mathsf{gcd}(a^{r/2}+1, N)$
+\EndIf
+\EndLoop
+\EndFunction
+\end{algorithmic}
+\end{frame}
+
+\begin{frame}{Eigenvalues of the unitary operator}
+Let $r$ be the \emm{order} of $a$ modulo $N$, which is a smallest positive integer satisfying
+\begin{equation*}
+a^r = 1 \mod N.
+\end{equation*}
+For $a$ that is \emm{coprime with $N$}, define the unitary operator $U_a$ by
+\begin{align*}
+U_a\ket{x} =
+\begin{cases}
+\ket{ax \bmod N}& \text{if $x<N$}\\
+\ket{x}& \text{Otherwise.}
+\end{cases}
+\end{align*}
+
+%\begin{itemize}
+%\setlength{\itemsep}{1em}
+%\item $U_a^r = I$.  This means that all eigenvalues of $U$ are in the form $\mathsf{e}^{2\pi i \frac{s}{r}}$ for $s\in\{0,1,2,\dotsc,r-1\}$.
+%\item $U^t \ne I$ for all $t\in\{0,1,2,\dotsc,r-1\}$. This means that there exists an eigenvalue of the form $\mathsf{e}^{2\pi i \frac{s}{r}}$ with $s$ coprime with $r$.
+%\end{itemize}
+Here, \emm{$U_a^r = I$}.  This means that all eigenvalues of $U_a$ are in the form $\mathsf{e}^{2\pi i \frac{s}{r}}$ for $s\in\{0,1,2,\dotsc,r-1\}$.
+
+\vspace{1em}
+By quantum phase estimation for $U_a$, an approximation of $\frac{s}{r}$ can be computed efficiently.
+
+\vspace{1em}
+From $0.b_nb_{n-1}\dotsm b_1\approx \frac{s}{r}$, we can extract the denominator $r$ if $s$ is comprime with $r$.
+\end{frame}
+
+\begin{frame}{Eigenvectors of the unitary operator}
+For $s\in\{0,1,\dotsc,r-1\}$,
+\begin{align*}
+\ket{\psi_s}&:=\frac1{\sqrt{r}} \sum_{j=0}^{r-1} \mathsf{e}^{-2\pi i \frac{sj}{r}} \ket{a^j \bmod N}.
+\end{align*}
+\begin{align*}
+U_a\ket{\psi_s}&=\frac1{\sqrt{r}} \sum_{j=0}^{r-1} \mathsf{e}^{-2\pi i \frac{sj}{r}} \ket{a^{\emm{j+1}} \bmod N}\\
+&=\mathsf{e}^{2\pi i \frac{s}{r}}\frac1{\sqrt{r}} \sum_{j=0}^{r-1} \mathsf{e}^{-2\pi i \frac{s(j+1)}{r}} \ket{a^{j+1} \bmod N}\\
+&=\mathsf{e}^{2\pi i \frac{s}{r}}\frac1{\sqrt{r}} \sum_{j=0}^{r-1} \mathsf{e}^{-2\pi i \frac{sj}{r}} \ket{a^j \bmod N}\\
+&=\mathsf{e}^{2\pi i \frac{s}{r}}\ket{\psi_s}.
+\end{align*}
+\end{frame}
+
+\begin{frame}{The uniform sperposition of the eigenvectors}
+For $s\in\{0,1,\dotsc,r-1\}$,
+\begin{align*}
+\ket{\psi_s}&:=\frac1{\sqrt{r}} \sum_{j=0}^{r-1} \mathsf{e}^{-2\pi i \frac{sj}{r}} \ket{a^j \bmod N}.
+\end{align*}
+\begin{align*}
+\frac1{\sqrt{r}}\sum_{s=0}^{r-1}\ket{\psi_s}
+&=\frac1{r} \sum_{s=0}^{r-1}\sum_{j=0}^{r-1} \mathsf{e}^{-2\pi i \frac{sj}{r}} \ket{a^j \bmod N}\\
+&=\sum_{j=0}^{r-1} \left(\frac1{r} \sum_{s=0}^{r-1}\mathsf{e}^{-2\pi i \frac{sj}{r}}\right) \ket{a^j \bmod N}\\
+&=\emm{\ket{1}}
+\end{align*}
+\end{frame}
+
+\begin{frame}{Quantum phase estimation}
+\[
+\Qcircuit @C=2em @R=1em {
+\lstick{\ket{0}}   &\gate{H} & \ctrl{3} & \qw&\qw & \multigate{2}{\mathsf{IQFT}}&  \qw\\
+\lstick{\ket{0}}   &\gate{H} & \qw &  \ctrl{2} &\qw & \ghost{IQFT} & \qw\\
+\lstick{\ket{0}}   &\gate{H} & \qw &  \qw & \ctrl{1} & \ghost{IQFT}& \qw\\
+\lstick{\ket{1}} &{/}\qw      & \gate{U_a} & \gate{U_a^2} &\gate{U_a^4} &\qw & \qw
+}
+\]
+
+\vspace{2em}
+For uniformly chosen $s\in\{0,1,\dotsc,r-1\}$, we obtain an approximation of $s/r$.
+\end{frame}
+
+\begin{frame}{Continued fraction}
+\begin{equation*}
+\theta=\cfrac{1}{a_1+\cfrac{1}{a_2+\cfrac{1}{a_3+\cfrac{1}{a_4+\dotsb}}}}
+\end{equation*}
+\begin{theorem}
+Suppose $s/r$ is a rational number satisfying
+\begin{equation*}
+\left|\frac{s}{r}-\theta\right|\le\frac1{2r^2}.
+\end{equation*}
+Then, $s/r$ is a convergent of the continued fraction for $\theta$.
+\end{theorem}
+\end{frame}
+
+\begin{frame}{The probability that we can calculate $r$ from $s/r$}
+For uniformly chosen $s\in\{0,1,\dotsc,r-1\}$, we obtain an approximation of $s/r$.
+
+%\vspace{1em}
+%If $s/r = 0$ is measured, we replace it by $s/r = 1$ that means $s=0$ is replaced by $s=r$.
+%Hence, $s$ is chosen uniformly from $\{1,2,\dotsc,r\}$ rather than $\{0,1,\dotsc,r-1\}$.
+
+\vspace{1em}
+From the denominators $d_1$ and $d_2$ of the irreducible fractions of $s_1/r$ and $s_2/r$, 
+we can calculate $r$ by $\mathsf{lcm}(d_1, d_2)$.
+\begin{align*}
+\Pr(\mathsf{lcm}(d_1, d_2) \ne r) &= \Pr_{s_1,s_2\in\{0,\dotsc,r-1\}}(\mathsf{gcd}(s_1,s_2,r) \ne 1)\\
+&= \Pr_{s_1,s_2\in\{1,\dotsc,r\}}(\mathsf{gcd}(s_1,s_2,r) \ne 1)\\
+&\le \Pr_{s_1,s_2\in\{1,\dotsc,r\}}(\mathsf{gcd}(s_1,s_2) \ne 1)\\
+&\le \sum_{p: \text{ prime}} \Pr_{s_1,s_2\in\{1,\dotsc,r\}}(p\mid s_1, p\mid s_2)\\
+&\le \sum_{p: \text{ prime}} \frac1{p^2}
+\le 0.4523
+\end{align*}
+\end{frame}
+
+\if0
+\begin{frame}{Probability of the best approximation}
+\small
+Assume that the eigenvalue is $\mathsf{e}^{2\pi i\phi}$.
+Let $\varphi\in\{0,1,\dotsc,2^n-1\}$ be the best $n$-bit approximation of $\phi$, i.e., \emm{$|\phi - \frac{\varphi}{2^n}|\le \frac1{2^{n+1}}$}.
+\begin{align*}
+\Pr(\varphi) &= \frac1{2^{2n}}\left|\left(\sum_{x=0}^{2^n-1} \mathsf{e}^{-i\frac{2\pi}{2^n}\varphi x}\bra{x}\right)\left(\sum_{x=0}^{2^n-1} \mathsf{e}^{i 2\pi\phi x}\ket{x}\right)\right|^2\\
+&= \frac1{2^{2n}}\left|\sum_{x=0}^{2^n-1} \mathsf{e}^{2\pi i\left(\phi - \frac{\varphi}{2^n}\right) x}\right|^2\\
+&= \frac1{2^{2n}}\left|\frac{1-\mathsf{e}^{2\pi i\left(2^n\phi - \varphi\right)}}{1-\mathsf{e}^{2\pi i\left(\phi - \frac{\varphi}{2^n}\right)}}\right|^2\\
+&= \frac1{2^{2n}}\frac{2\sin^2\left(\pi\left(2^n\phi - \varphi\right)\right)}{2\sin^2\left(\pi\left(\phi - \frac{\varphi}{2^n}\right)\right)}\\
+&\ge \frac1{2^{2n}}\frac{\sin^2\left(\pi\left(2^n\phi - \varphi\right)\right)}{\left(\pi\left(\phi - \frac{\varphi}{2^n}\right)\right)^2}\\
+&\ge \frac1{2^{2n}}\frac{\left(2\left(2^n\phi - \varphi\right)\right)^2}{\left(\pi\left(\phi - \frac{\varphi}{2^n}\right)\right)^2}
+= \frac{4}{\pi^2}\approx 0.405
+\end{align*}
+\end{frame}
+\fi
+
+\if0
+\begin{frame}{Error probability}
+\begin{align*}
+\Pr\left(\left|\phi - \frac{\varphi}{2^n}\right| > \frac{c}{2^n}\right)
+&=\sum_{} \frac1{2^{2n}}\frac{\sin^2\left(\pi\left(2^n\phi - \varphi\right)\right)}{\sin^2\left(\pi\left(\phi - \frac{\varphi}{2^n}\right)\right)}\\
+&= \frac1{2^{2n}}\sum_{}\frac{1}{\left(\pi\left(\phi - \frac{\varphi}{2^n}\right)\right)^2}\\
+\end{align*}
+\end{frame}
+\fi
+
+
+
+\begin{frame}{Assignments}
+\begin{enumerate}
+\setlength{\itemsep}{2em}
+\item Show \emm{all} eigenvectors and corresponding eigenvalues of $2^{\lceil \log N\rceil}\times 2^{\lceil\log N\rceil}$ matrix $U_a$.
+\end{enumerate}
+\end{frame}
+
+\end{document}
