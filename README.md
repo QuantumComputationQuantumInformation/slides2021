@@ -24,3 +24,4 @@ https://www.youtube.com/playlist?list=PLmCVdZFx-DuebJ2Up_0tW5cAgJmsjECcY
 * 11/5 Universality of quantum circuit [slide](/tex/10_Universality2.pdf)
 * 11/9 Quantum phase estimation [slide](/tex/11_QuantumPhaseEstimation.pdf)
 * 11/12 Shor's algorithm [slide](/tex/12_Shor.pdf)
+* 11/16 Grover's algorithm [slide](/tex/13_Grover.pdf)
