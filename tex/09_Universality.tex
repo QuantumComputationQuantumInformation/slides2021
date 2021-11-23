@@ -368,7 +368,7 @@ Apply at most $n-1$ CNOT gates such that
 \begin{align*}
 \ket{x}&\longmapsto \ket{\emm{y\oplus e_i}}\\
 \ket{y}&\longmapsto \ket{y}\\
-\forall z\ne x, y\qquad \exists \tilde{z}\ne x,y\qquad
+\forall z\ne x, y\qquad \exists \tilde{z}\ne y,y\oplus e_i\qquad
 \ket{z}&\longmapsto \ket{\tilde{z}},
 \end{align*}
 Then, apply \emm{``controlled unitary''} and reverse the permutation of the basis.
